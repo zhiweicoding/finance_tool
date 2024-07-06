@@ -11,7 +11,7 @@
 
     <description>finance_tool</description>
     <groupId>plus.zhiwei.finance</groupId>
-    <artifactId>tool</artifactId>
+    <artifactId>finance_tool</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 

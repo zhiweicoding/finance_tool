@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: pet_money_tool
+    name: finance_tool
   datasource:
     url: jdbc:mysql://host:port/pet?useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
     driver-class-name: com.mysql.cj.jdbc.Driver

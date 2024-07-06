@@ -131,7 +131,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.6.4</version>
                 <configuration>
-                    <mainClass>plus.zhiwei.petmoneytool.FinanceToolApplication</mainClass>
+                    <mainClass>plus.zhiwei.finance.FinanceToolApplication</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

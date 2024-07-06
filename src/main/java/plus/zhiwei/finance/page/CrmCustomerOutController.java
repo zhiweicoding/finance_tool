@@ -32,7 +32,7 @@ public class CrmCustomerOutController {
     private static final String iv = "cih0bpfc5o6lavb3";
 
     @PostMapping("/check")
-    public CommonResult<Object> importOut(@RequestBody CrmCustomerCheckOutReqVO checkOutReqVO) {
+    public CommonResult<Object> check(@RequestBody CrmCustomerCheckOutReqVO checkOutReqVO) {
         try {
             String jsonString = JSON.toJSONString(checkOutReqVO);
             Map<String, String> dict = JSON.parseObject(jsonString, new TypeReference<>() {
@@ -58,7 +58,7 @@ public class CrmCustomerOutController {
 
     }
 
-    @PostMapping("/import")
+    @PostMapping("/importOut")
     public CommonResult<Object> importOut(@RequestBody CrmCustomerImportOutReqVO importReqVO) {
         try {
             String jsonString = JSON.toJSONString(importReqVO);

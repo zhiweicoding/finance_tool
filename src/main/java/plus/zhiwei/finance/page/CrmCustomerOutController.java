@@ -5,6 +5,7 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,10 +27,15 @@ public class CrmCustomerOutController {
 
     private static final String CHARSET_NAME = "UTF-8";
     private static final String CIPHER_NAME = "AES/CBC/PKCS5Padding";
-    private static final String SIGN_KEY = "yz00cbe2ae";
-    private static final String SOURCE = "hzjf-yrk";
-    private static final String key = "vlpmcx5i5omn3nt0";
-    private static final String iv = "cih0bpfc5o6lavb3";
+
+    @Value("${crm.sign:yz00cbe2ae}")
+    private String signKey;
+    @Value("${crm.source:hzjf-yrk}")
+    private String source;
+    @Value("${crm.key:vlpmcx5i5omn3nt0}")
+    private String key;
+    @Value("${crm.iv:cih0bpfc5o6lavb3}")
+    private String iv;
 
     @PostMapping("/check")
     public CommonResult<Object> check(@RequestBody CrmCustomerCheckOutReqVO checkOutReqVO) {
@@ -38,7 +44,7 @@ public class CrmCustomerOutController {
             Map<String, String> dict = JSON.parseObject(jsonString, new TypeReference<>() {
             });
             String sign = dict.remove("sign");
-            String signGenerate = getSign(dict, SIGN_KEY);
+            String signGenerate = getSign(dict, signKey);
             if (signGenerate.equals(sign)) {
                 log.info("检测手机号是否存在 sign success");
             }
@@ -65,20 +71,24 @@ public class CrmCustomerOutController {
             Map<String, String> dict = JSON.parseObject(jsonString, new TypeReference<Map<String, String>>() {
             });
             String sign = dict.remove("sign");
-            String signGenerate = getSign(dict, SIGN_KEY);
+            String signGenerate = getSign(dict, signKey);
             if (signGenerate != null && signGenerate.equals(sign)) {
                 log.info("导入外部用户信息 sign success");
             }
         } catch (Exception e) {
             log.error("导入外部用户信息 sign fail:{}", e.getMessage(), e);
         }
-        boolean result = crmCustomerOutService.importOut(importReqVO);
-        if (result) {
+        int result = crmCustomerOutService.importOut(importReqVO);
+        if (result == 0) {
             CommonResult<Object> success = CommonResult.success(null);
             success.setMsg("入库成功");
             return success;
+        } else if (result == -1) {
+            CommonResult<Object> error = CommonResult.error(1001, "手机号转换异常");
+            error.setData(null);
+            return error;
         } else {
-            CommonResult<Object> error = CommonResult.error(1001, "签名不正确");
+            CommonResult<Object> error = CommonResult.error(1001, "手机号已存在");
             error.setData(null);
             return error;
         }

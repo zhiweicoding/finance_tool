@@ -22,3 +22,13 @@ spring:
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+email:
+  from: ${EMAIL_FROM}
+  password: ${EMAIL_PASSWORD}
+  defaultTo: ${EMAIL_DEFAULTTO}
+  host: ${EMAIL_HOST}
+  protocol: ${EMAIL_PROTOCOL}
+  smtpAuth: ${EMAIL_SMTPAUTH}
+  debug: ${EMAIL_DEBUG}
+  content: ${EMAIL_CONTENT}

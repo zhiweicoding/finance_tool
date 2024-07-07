@@ -19,10 +19,4 @@ public interface CrmCustomerMapper extends MPJBaseMapper<CrmCustomerDO> {
     @Select("SELECT COUNT(t.id) FROM `ruoyi-vue-pro`.crm_customer t WHERE MD5(t.mobile) = #{md5phone}")
     long countByMd5Phone(@Param("md5phone") String md5phone);
 
-
-    default CrmCustomerDO selectByCustomerName(String name) {
-        LambdaQueryWrapper<CrmCustomerDO> wrapper = Wrappers.<CrmCustomerDO>lambdaQuery().eq(CrmCustomerDO::getName, name);
-        return selectOne(wrapper);
-    }
-
 }

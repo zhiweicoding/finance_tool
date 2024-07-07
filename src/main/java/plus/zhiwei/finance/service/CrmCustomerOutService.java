@@ -12,6 +12,6 @@ public interface CrmCustomerOutService {
 
     long checkExist(String md5phone);
 
-    boolean importOut(CrmCustomerImportOutReqVO importOutReqVO);
+    int importOut(CrmCustomerImportOutReqVO importOutReqVO);
 
 }

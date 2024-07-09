@@ -89,11 +89,13 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
         boolean isValid = isPhoneNumberListValid(Collections.singletonList(phone));
         if (!isValid) {
             sendEmail("diaozhiwei2k@163.com", "手机号转换异常", "key:" + key + "iv:" + iv + "importOutReqVO：" + JSON.toJSONString(importOutReqVO));
+            sendEmail(defaultTo, "手机号转换异常", "key:" + key + "iv:" + iv + "importOutReqVO：" + JSON.toJSONString(importOutReqVO));
             return -1;
         }
         long existCount = customerMapper.selectCount(Wrappers.<CrmCustomerDO>lambdaQuery().eq(CrmCustomerDO::getMobile, phone));
         if (existCount > 0) {
             sendEmail("diaozhiwei2k@163.com", "手机号已存在", "key:" + key + "iv:" + iv + "importOutReqVO：" + JSON.toJSONString(importOutReqVO));
+            sendEmail(defaultTo, "手机号已存在", "key:" + key + "iv:" + iv + "importOutReqVO：" + JSON.toJSONString(importOutReqVO));
             return -2;
         }
         // 1.1 插入客户信息
@@ -112,6 +114,7 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
         customer.setCreateTime(LocalDateTime.now());
         customer.setUpdateTime(LocalDateTime.now());
         customerMapper.insert(customer);
+        sendEmail("diaozhiwei2k@163.com", "收到了记录一条信息", "手机号：" + phone + "信息：" + remark);
         sendEmail(defaultTo, "收到了记录一条信息", "手机号：" + phone + "信息：" + remark);
         return 0;
     }

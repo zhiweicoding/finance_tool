@@ -55,6 +55,7 @@ public class CrmCustomerOutController {
         if (l == 0) {
             CommonResult<Object> success = CommonResult.success(null);
             success.setMsg("撞库通过");
+            success.setCode(200);
             return success;
         } else {
             CommonResult<Object> error = CommonResult.error(1001, "已存在");
@@ -82,6 +83,7 @@ public class CrmCustomerOutController {
         if (result == 0) {
             CommonResult<Object> success = CommonResult.success(null);
             success.setMsg("入库成功");
+            success.setCode(200);
             return success;
         } else if (result == -1) {
             CommonResult<Object> error = CommonResult.error(1001, "手机号转换异常");

@@ -120,4 +120,6 @@ public class CrmCustomerDO extends BaseDO {
      */
     private String remark;
 
+    private int tenantId=164;
+
 }

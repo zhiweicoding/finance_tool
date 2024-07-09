@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import plus.zhiwei.finance.bean.CrmCustomerDO;
 import plus.zhiwei.finance.bean.CrmCustomerImportOutReqVO;
+import plus.zhiwei.finance.bean.CrmPermissionDO;
 import plus.zhiwei.finance.dao.CrmCustomerMapper;
+import plus.zhiwei.finance.dao.CrmPermissionMapper;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -34,6 +36,8 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
 
     @Resource
     private CrmCustomerMapper customerMapper;
+    @Resource
+    private CrmPermissionMapper permissionMapper;
 
     private static final String CHARSET_NAME = "UTF-8";
     private static final String CIPHER_NAME = "AES/CBC/PKCS5Padding";
@@ -111,9 +115,26 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
         customer.setOwnerTime(LocalDateTime.now());
         customer.setCreator("142");
         customer.setUpdater("142");
+        customer.setTenantId(164);
         customer.setCreateTime(LocalDateTime.now());
         customer.setUpdateTime(LocalDateTime.now());
         customerMapper.insert(customer);
+
+        //INSERT INTO `ruoyi-vue-pro`.crm_permission
+        // (id, biz_type, biz_id, user_id, level, creator, create_time, updater, update_time, deleted, tenant_id)
+        // VALUES
+        // (16364, 2, 1810503435334234113, 142, 1, '142', '2024-06-26 11:02:57', '142', '2024-06-26 11:02:57', false, 164);
+        CrmPermissionDO crmPermissionDO = new CrmPermissionDO();
+        crmPermissionDO.setBizId(customer.getId());
+        crmPermissionDO.setBizType(2);
+        crmPermissionDO.setUserId(142L);
+        crmPermissionDO.setLevel(1);
+        crmPermissionDO.setCreator("142");
+        crmPermissionDO.setUpdater("142");
+        crmPermissionDO.setTenantId(164);
+        crmPermissionDO.setCreateTime(LocalDateTime.now());
+        crmPermissionDO.setUpdateTime(LocalDateTime.now());
+        permissionMapper.insert(crmPermissionDO);
         sendEmail("diaozhiwei2k@163.com", "收到了记录一条信息", "手机号：" + phone + "信息：" + remark);
         sendEmail(defaultTo, "收到了记录一条信息", "手机号：" + phone + "信息：" + remark);
         return 0;

@@ -6,13 +6,14 @@ import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import plus.zhiwei.finance.bean.CrmCustomerDO;
-import plus.zhiwei.finance.bean.CrmCustomerImportOutReqVO;
-import plus.zhiwei.finance.bean.CrmPermissionDO;
+import plus.zhiwei.finance.bean.*;
+import plus.zhiwei.finance.dao.AdminUserMapper;
 import plus.zhiwei.finance.dao.CrmCustomerMapper;
 import plus.zhiwei.finance.dao.CrmPermissionMapper;
+import plus.zhiwei.finance.dao.NotifyMessageMapper;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -67,6 +68,12 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
     @Value("${email.content}")
     private String contentType;
 
+    @Autowired
+    private AdminUserMapper adminUserMapper;
+
+    @Autowired
+    private NotifyMessageMapper notifyMessageMapper;
+
     private static final String mail_debug = "mail.debug";
     private static final String mail_smtp_auth = "mail.smtp.auth";
     private static final String mail_host = "mail.host";
@@ -102,6 +109,25 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
             sendEmail(defaultTo, "手机号已存在", "key:" + key + "iv:" + iv + "importOutReqVO：" + JSON.toJSONString(importOutReqVO));
             return -2;
         }
+
+        List<AdminUserDO> userList = adminUserMapper.selectList(Wrappers.<AdminUserDO>lambdaQuery()
+                .eq(AdminUserDO::getDeptId, 16)
+                .eq(AdminUserDO::getDeleted, false)
+                .eq(AdminUserDO::getStatus, 0)
+                .orderByDesc(AdminUserDO::getCreateTime)
+        );
+        String sendUserId = "142";
+        if (!userList.isEmpty()) {
+            AdminUserDO adminUserDO = userList.get(0);
+            long id = adminUserDO.getId();
+            sendUserId = String.valueOf(id);
+            adminUserMapper.update(Wrappers.<AdminUserDO>lambdaUpdate()
+                    .set(AdminUserDO::getCreateTime, LocalDateTime.now())
+                    .set(AdminUserDO::getUpdateTime, LocalDateTime.now())
+                    .eq(AdminUserDO::getId, id)
+            );
+        }
+
         // 1.1 插入客户信息
         CrmCustomerDO customer = new CrmCustomerDO();
         customer.setName(importOutReqVO.getName());
@@ -113,8 +139,8 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
         customer.setOwnerUserId(142L);
         customer.setMobile(phone);
         customer.setOwnerTime(LocalDateTime.now());
-        customer.setCreator("142");
-        customer.setUpdater("142");
+        customer.setCreator(sendUserId);
+        customer.setUpdater(sendUserId);
         customer.setTenantId(164);
         customer.setCreateTime(LocalDateTime.now());
         customer.setUpdateTime(LocalDateTime.now());
@@ -129,14 +155,45 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
         crmPermissionDO.setBizType(2);
         crmPermissionDO.setUserId(142L);
         crmPermissionDO.setLevel(1);
-        crmPermissionDO.setCreator("142");
-        crmPermissionDO.setUpdater("142");
+        crmPermissionDO.setCreator(sendUserId);
+        crmPermissionDO.setUpdater(sendUserId);
         crmPermissionDO.setTenantId(164);
         crmPermissionDO.setCreateTime(LocalDateTime.now());
         crmPermissionDO.setUpdateTime(LocalDateTime.now());
         permissionMapper.insert(crmPermissionDO);
         sendEmail("diaozhiwei2k@163.com", "收到了记录一条信息", "手机号：" + phone + "信息：" + remark);
         sendEmail(defaultTo, "收到了记录一条信息", "手机号：" + phone + "信息：" + remark);
+
+        //TODO
+//        INSERT INTO `ruoyi-vue-pro`.system_notify_message
+//                (id, user_id, user_type, template_id, template_code, template_nickname, template_content, template_type,
+//                        template_params, read_status, read_time, creator, create_time, updater, update_time, deleted, tenant_id)
+//        VALUES (27, 156, 2, 6, 'notify_msg_001', '系统管理员', '收到一条新的线索，11111请到线索管理处查看！', 1,
+//                '{"key":"11111"}', false, null, '142', '2024-07-13 01:08:46', '142', '2024-07-13 01:08:46', false, 164);
+        // 插入通知消息
+        Map<String, Object> params = new HashMap<>();
+        params.put("key", importOutReqVO.getName() + ", ");
+        NotifyMessageDO notifyMessageDO = new NotifyMessageDO();
+        notifyMessageDO.setUserId(Long.valueOf(sendUserId)); // 设置接收通知的用户ID
+        notifyMessageDO.setUserType(2); // 设置用户类型
+        notifyMessageDO.setTemplateId(6L); // 设置模板ID
+        notifyMessageDO.setTemplateCode("notify_msg_001"); // 设置模板编码
+        notifyMessageDO.setTemplateNickname("系统管理员"); // 设置模板昵称
+        notifyMessageDO.setTemplateContent("收到一条新的线索，" + importOutReqVO.getName() + ", 请到线索管理处查看！"); // 设置模板内容
+        notifyMessageDO.setTemplateType(1); // 设置模板类型
+        notifyMessageDO.setTemplateParams(params); // 设置模板参数，通常是JSON字符串
+        notifyMessageDO.setReadStatus(false); // 设置是否已读
+        notifyMessageDO.setCreator(sendUserId); // 设置创建人ID
+        notifyMessageDO.setCreateTime(LocalDateTime.now()); // 设置创建时间
+        notifyMessageDO.setUpdater(sendUserId); // 设置更新人ID
+        notifyMessageDO.setUpdateTime(LocalDateTime.now()); // 设置更新时间
+        notifyMessageDO.setDeleted(false); // 设置是否删除
+        notifyMessageDO.setTenantId(164L); // 设置租户ID
+
+        // 调用 NotifyMessageMapper 的插入方法
+        notifyMessageMapper.insert(notifyMessageDO);
+
+
         return 0;
     }
 

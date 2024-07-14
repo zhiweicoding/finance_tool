@@ -117,10 +117,12 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
                 .orderByDesc(AdminUserDO::getCreateTime)
         );
         String sendUserId = "142";
+        String sendUserName = "管理员";
         if (!userList.isEmpty()) {
             AdminUserDO adminUserDO = userList.get(0);
             long id = adminUserDO.getId();
             sendUserId = String.valueOf(id);
+            sendUserName = adminUserDO.getNickname();
             adminUserMapper.update(Wrappers.<AdminUserDO>lambdaUpdate()
                     .set(AdminUserDO::getCreateTime, LocalDateTime.now())
                     .set(AdminUserDO::getUpdateTime, LocalDateTime.now())
@@ -161,8 +163,8 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
         crmPermissionDO.setCreateTime(LocalDateTime.now());
         crmPermissionDO.setUpdateTime(LocalDateTime.now());
         permissionMapper.insert(crmPermissionDO);
-        sendEmail("diaozhiwei2k@163.com", "收到了记录一条信息", "手机号：" + phone + "信息：" + remark);
-        sendEmail(defaultTo, "收到了记录一条信息", "手机号：" + phone + "信息：" + remark);
+        sendEmail("diaozhiwei2k@163.com", sendUserName + "收到了记录一条信息", "手机号：" + phone + "信息：" + remark);
+        sendEmail(defaultTo, sendUserName + "收到了记录一条信息", "手机号：" + phone + "信息：" + remark);
 
         //TODO
 //        INSERT INTO `ruoyi-vue-pro`.system_notify_message

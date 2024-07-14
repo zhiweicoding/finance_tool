@@ -22,6 +22,9 @@ import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -116,6 +119,16 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
                 .eq(AdminUserDO::getStatus, 0)
                 .orderByAsc(AdminUserDO::getCreateTime)
         );
+
+        // 获取当前时间的北京时间
+        ZonedDateTime beijingTime = ZonedDateTime.now(ZoneId.of("Asia/Shanghai"));
+        // 格式化输出
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedTime = beijingTime.format(formatter);
+        System.out.println("北京时间: " + formattedTime);
+        // 如果需要 LocalDateTime 格式
+        LocalDateTime localBeijingTime = beijingTime.toLocalDateTime();
+
         String sendUserId = "142";
         String sendUserName = "管理员";
         if (!userList.isEmpty()) {
@@ -124,8 +137,8 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
             sendUserId = String.valueOf(id);
             sendUserName = adminUserDO.getNickname();
             adminUserMapper.update(Wrappers.<AdminUserDO>lambdaUpdate()
-                    .set(AdminUserDO::getCreateTime, LocalDateTime.now())
-                    .set(AdminUserDO::getUpdateTime, LocalDateTime.now())
+                    .set(AdminUserDO::getCreateTime, localBeijingTime)
+                    .set(AdminUserDO::getUpdateTime, localBeijingTime)
                     .eq(AdminUserDO::getId, id)
             );
         }
@@ -140,12 +153,12 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
         customer.setRemark(remark);
         customer.setOwnerUserId(142L);
         customer.setMobile(phone);
-        customer.setOwnerTime(LocalDateTime.now());
+        customer.setOwnerTime(localBeijingTime);
         customer.setCreator(sendUserId);
         customer.setUpdater(sendUserId);
         customer.setTenantId(164);
-        customer.setCreateTime(LocalDateTime.now());
-        customer.setUpdateTime(LocalDateTime.now());
+        customer.setCreateTime(localBeijingTime);
+        customer.setUpdateTime(localBeijingTime);
         customerMapper.insert(customer);
 
         //INSERT INTO `ruoyi-vue-pro`.crm_permission
@@ -160,8 +173,8 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
         crmPermissionDO.setCreator(sendUserId);
         crmPermissionDO.setUpdater(sendUserId);
         crmPermissionDO.setTenantId(164);
-        crmPermissionDO.setCreateTime(LocalDateTime.now());
-        crmPermissionDO.setUpdateTime(LocalDateTime.now());
+        crmPermissionDO.setCreateTime(localBeijingTime);
+        crmPermissionDO.setUpdateTime(localBeijingTime);
         permissionMapper.insert(crmPermissionDO);
         sendEmail("diaozhiwei2k@163.com", sendUserName + "收到了记录一条信息", "手机号：" + phone + "信息：" + remark);
         sendEmail(defaultTo, sendUserName + "收到了记录一条信息", "手机号：" + phone + "信息：" + remark);
@@ -186,15 +199,14 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
         notifyMessageDO.setTemplateParams(params); // 设置模板参数，通常是JSON字符串
         notifyMessageDO.setReadStatus(false); // 设置是否已读
         notifyMessageDO.setCreator(sendUserId); // 设置创建人ID
-        notifyMessageDO.setCreateTime(LocalDateTime.now()); // 设置创建时间
+        notifyMessageDO.setCreateTime(localBeijingTime); // 设置创建时间
         notifyMessageDO.setUpdater(sendUserId); // 设置更新人ID
-        notifyMessageDO.setUpdateTime(LocalDateTime.now()); // 设置更新时间
+        notifyMessageDO.setUpdateTime(localBeijingTime); // 设置更新时间
         notifyMessageDO.setDeleted(false); // 设置是否删除
         notifyMessageDO.setTenantId(164L); // 设置租户ID
 
         // 调用 NotifyMessageMapper 的插入方法
         notifyMessageMapper.insert(notifyMessageDO);
-
 
         return 0;
     }

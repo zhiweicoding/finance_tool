@@ -114,7 +114,7 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
                 .eq(AdminUserDO::getDeptId, 16)
                 .eq(AdminUserDO::getDeleted, false)
                 .eq(AdminUserDO::getStatus, 0)
-                .orderByDesc(AdminUserDO::getCreateTime)
+                .orderByAsc(AdminUserDO::getCreateTime)
         );
         String sendUserId = "142";
         String sendUserName = "管理员";

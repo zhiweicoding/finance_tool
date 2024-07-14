@@ -111,7 +111,7 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
         }
 
         List<AdminUserDO> userList = adminUserMapper.selectList(Wrappers.<AdminUserDO>lambdaQuery()
-                .eq(AdminUserDO::getDeptId, 16)
+                .eq(AdminUserDO::getDeptId, 116)
                 .eq(AdminUserDO::getDeleted, false)
                 .eq(AdminUserDO::getStatus, 0)
                 .orderByAsc(AdminUserDO::getCreateTime)

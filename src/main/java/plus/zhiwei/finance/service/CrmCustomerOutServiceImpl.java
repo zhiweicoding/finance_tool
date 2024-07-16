@@ -154,6 +154,7 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
         customer.setOwnerUserId(142L);
         customer.setMobile(phone);
         customer.setOwnerTime(localBeijingTime);
+        customer.setSource(1);
         customer.setCreator(sendUserId);
         customer.setUpdater(sendUserId);
         customer.setTenantId(164);

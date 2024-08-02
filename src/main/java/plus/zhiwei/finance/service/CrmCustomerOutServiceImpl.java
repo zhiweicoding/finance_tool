@@ -151,7 +151,7 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
                 importOutReqVO.getName(), importOutReqVO.getCity(), importOutReqVO.getSex(), importOutReqVO.getBirthDate(), importOutReqVO.getOverdue(),
                 importOutReqVO.getHouse(), importOutReqVO.getSocial(), importOutReqVO.getVehicle(), importOutReqVO.getVocation(), importOutReqVO.getSesame());
         customer.setRemark(remark);
-        customer.setOwnerUserId(142L);
+        customer.setOwnerUserId(Long.valueOf(sendUserId));
         customer.setMobile(phone);
         customer.setOwnerTime(localBeijingTime);
         customer.setSource(1);
@@ -169,7 +169,7 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
         CrmPermissionDO crmPermissionDO = new CrmPermissionDO();
         crmPermissionDO.setBizId(customer.getId());
         crmPermissionDO.setBizType(2);
-        crmPermissionDO.setUserId(142L);
+        crmPermissionDO.setUserId(Long.valueOf(sendUserId));
         crmPermissionDO.setLevel(1);
         crmPermissionDO.setCreator(sendUserId);
         crmPermissionDO.setUpdater(sendUserId);
@@ -195,7 +195,7 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
         notifyMessageDO.setTemplateId(6L); // 设置模板ID
         notifyMessageDO.setTemplateCode("notify_msg_001"); // 设置模板编码
         notifyMessageDO.setTemplateNickname("系统管理员"); // 设置模板昵称
-        notifyMessageDO.setTemplateContent("收到一条新的线索，" + importOutReqVO.getName() + ", 请到线索管理处查看！"); // 设置模板内容
+        notifyMessageDO.setTemplateContent("收到新的线索，" + importOutReqVO.getName() + " - 手机号：" + phone + ", 客户管理可查看"); // 设置模板内容
         notifyMessageDO.setTemplateType(1); // 设置模板类型
         notifyMessageDO.setTemplateParams(params); // 设置模板参数，通常是JSON字符串
         notifyMessageDO.setReadStatus(false); // 设置是否已读

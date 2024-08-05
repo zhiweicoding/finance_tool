@@ -177,7 +177,7 @@ public class CrmCustomerOutServiceImpl implements CrmCustomerOutService {
         crmPermissionDO.setCreateTime(localBeijingTime);
         crmPermissionDO.setUpdateTime(localBeijingTime);
         permissionMapper.insert(crmPermissionDO);
-        sendEmail("diaozhiwei2k@163.com", sendUserName + "收到了记录一条信息", "手机号：" + phone + "信息：" + remark);
+//        sendEmail("diaozhiwei2k@163.com", sendUserName + "收到了记录一条信息", "手机号：" + phone + "信息：" + remark);
         sendEmail(defaultTo, sendUserName + "收到了记录一条信息", "手机号：" + phone + "信息：" + remark);
 
         //TODO
